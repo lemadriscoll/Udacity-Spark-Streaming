@@ -1,6 +1,6 @@
 # Udacity-Spark-Streaming
 
-# Screenshot of sample console output:
+## Screenshot of sample console output:
 
 --Insert from Step 1 here--
 
