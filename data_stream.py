@@ -37,8 +37,8 @@ def run_spark_job(spark):
         .option("subscribe","sf.police.calls") \
         .option("startingOffsets","earliest") \
         .option("maxOffsetPerTrigger",200) \
-        .option("maxRatePerPartition",200) \
-        .option("stopGracefullyOnShutdown","true")
+        .option("maxRatePerPartition",2000) \
+        .option("stopGracefullyOnShutdown","true") \
         .load()
     
 
@@ -63,7 +63,7 @@ def run_spark_job(spark):
     # write output stream
     agg_query = agg_df \
             .writeStream \
-            .outputMode("Completed") \
+            .outputMode("complete") \
             .format("console") \
             .start()
 
