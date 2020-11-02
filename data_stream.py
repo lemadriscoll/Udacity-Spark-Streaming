@@ -1,3 +1,5 @@
+
+
 import logging
 import json
 from pyspark.sql import SparkSession
@@ -55,7 +57,7 @@ def run_spark_job(spark):
     distinct_table = service_table.select("original_crime_type_name","disposition").distinct()
 
     # count the number of original crime type
-    agg_df = distinct_table.groupBy("original_crime_type_name").count()
+    agg_df = distinct_table.dropna().groupBy("original_crime_type_name").count()
 
     # TODO Q1. Submit a screen shot of a batch ingestion of the aggregation
     # write output stream
@@ -80,7 +82,7 @@ def run_spark_job(spark):
     radio_code_df = radio_code_df.withColumnRenamed("disposition_code", "disposition")
 
     # TODO join on disposition column
-    join_query = agg_df.join(radio_code_df,"disposition") \
+    join_query = agg_df.join(radio_code_df,col('agg_df.disposition') == col('radio_code_df.disposition'), 'inner') \
                         .writeStream \
                         .queryName("join") \
                         .format("console") \
@@ -101,6 +103,7 @@ if __name__ == "__main__":
         .appName("KafkaSparkStructuredStreaming") \
         .config("spark.ui.port", 3000) \
         .getOrCreate()
+
 
     logger.info("Spark started")
 
