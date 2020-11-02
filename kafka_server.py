@@ -8,7 +8,7 @@ def run_kafka_server():
         input_file=input_file,
         topic="sf.police.calls",
         bootstrap_servers="localhost:9092",
-        client_id="SF Police Calls Server"
+        client_id="SF_Police_Calls_Server"
     )
 
     return producer
@@ -21,3 +21,5 @@ def feed():
 
 if __name__ == "__main__":
     feed()
+
+        
