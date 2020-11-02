@@ -21,6 +21,7 @@ def feed():
     try:
         producer.generate_data()
     except:
+        print("Exception!")
         producer.counter=0
         producer.flush()
         producer.close()
