@@ -23,5 +23,5 @@ class ProducerServer(KafkaProducer):
 
     # TODO fill this in to return the json dictionary to binary
     def dict_to_binary(self, json_dict):
-        return json.dumps(json_dict).encore('utf-8')
-        
+        return json.dumps(json_dict).encode('utf-8')
+
