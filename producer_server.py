@@ -9,12 +9,13 @@ class ProducerServer(KafkaProducer):
         super().__init__(**kwargs)
         self.input_file = input_file
         self.topic = topic
+        self.counter=0
 
     #TODO we're generating a dummy data
     def generate_data(self):
         with open(self.input_file, 'r') as f:
             data=json.load(f)
-            for line in f:
+            for line in data:
                 message = self.dict_to_binary(line)
                 record = self.send(self.topic, message)
                 self.counter = self.counter+1
@@ -24,4 +25,3 @@ class ProducerServer(KafkaProducer):
     # TODO fill this in to return the json dictionary to binary
     def dict_to_binary(self, json_dict):
         return json.dumps(json_dict).encode('utf-8')
-

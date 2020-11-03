@@ -18,6 +18,7 @@ def run_kafka_server():
 
 def feed():
     producer = run_kafka_server()
+
     try:
         producer.generate_data()
     except:
@@ -26,8 +27,5 @@ def feed():
         producer.flush()
         producer.close()
 
-
 if __name__ == "__main__":
     feed()
-
-        
