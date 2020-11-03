@@ -2,7 +2,7 @@
 
 ## Screenshot of sample console output:
 
-(https://github.com/lemadriscoll/Udacity-Spark-Streaming/blob/main/agg_counter.png?raw=true)
+(https://github.com/lemadriscoll/Udacity-Spark-Streaming/blob/main/agg_counter.png)
 
 
 ## Screenshot from progress reporter after executing job:
