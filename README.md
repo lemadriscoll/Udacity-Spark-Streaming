@@ -19,4 +19,4 @@ Checking maxRatePerPartition and maxOffsetPerTrigger at 200 and 100 did not appe
 
 ## What were the 2-3 most efficient SparkSession property key/value pairs? Through testing multiple variations on values, how can you tell these were the most optimal?
 
-parallelism at 100, maxRatePerPartition at 200, and maxOffsetPerTrigger worked well.
+parallelism at 100, maxRatePerPartition at 200, and maxOffsetPerTrigger worked well. There are tipping points on each of these where performance dipped, which tells me that it is important to carefully choose and set these parameters rather than allowing them to default.
