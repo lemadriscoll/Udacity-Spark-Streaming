@@ -1,17 +1,16 @@
 # Udacity-Spark-Streaming
 
-## Screenshot of sample console output:
+## Screenshot of sample kafka console output:
+
+![](https://github.com/lemadriscoll/Udacity-Spark-Streaming/blob/main/consoleoutput.png)
+
+
+## Screenshot after executing Spark job:
 
 ![](https://github.com/lemadriscoll/Udacity-Spark-Streaming/blob/main/agg_counter.png)
 
-
-## Screenshot from progress reporter after executing job:
-
---Insert here --
-
 ## Screenshot of Spark Streaming UI:
-
---Insert here--
+![](https://github.com/lemadriscoll/Udacity-Spark-Streaming/blob/main/sparkjobs.png)
 
 ## How did changing values on the SparkSession property parameters affect the throughput and latency of the data?
 
