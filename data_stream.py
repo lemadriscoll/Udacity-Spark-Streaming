@@ -1,18 +1,15 @@
-
-
 import logging
 import json
 from pyspark.sql import SparkSession
 from pyspark.sql.types import *
 import pyspark.sql.functions as psf
 
-
 # TODO Create a schema for incoming resources
 schema = StructType([StructField("crime_id", StringType(), True),
                      StructField("original_crime_type_name", StringType(), True),
                      StructField("call_date", StringType(), True),
                      StructField("call_time", StringType(), True),
-                     StructField("call_date_time", StringType(), True),
+                     StructField("call_date_time", TimestampType(), True),
                      StructField("report_date", StringType(), True),
                      StructField("agency_id", StringType(), True),
                      StructField("disposition", StringType(), True),
@@ -37,7 +34,7 @@ def run_spark_job(spark):
         .option("subscribe","sf.police.calls") \
         .option("startingOffsets","earliest") \
         .option("maxOffsetPerTrigger",200) \
-        .option("maxRatePerPartition",2000) \
+        .option("maxRatePerPartition",200) \
         .option("stopGracefullyOnShutdown","true") \
         .load()
     
@@ -54,22 +51,24 @@ def run_spark_job(spark):
         .select("DF.*")
 
     # select original_crime_type_name and disposition
-    distinct_table = service_table.select("original_crime_type_name","disposition").distinct()
+    distinct_table = service_table.select("original_crime_type_name","disposition","call_date_time").distinct().withWatermark('call_date_time', "1 minute")
 
     # count the number of original crime type
     agg_df = distinct_table.dropna().groupBy("original_crime_type_name").count()
 
-    # TODO Q1. Submit a screen shot of a batch ingestion of the aggregation
+    # Q1. Submit a screen shot of a batch ingestion of the aggregation
     # write output stream
-    agg_query = agg_df \
-            .writeStream \
-            .outputMode("complete") \
-            .format("console") \
-            .start()
+    query = agg_df\
+            .writeStream\
+            .format('console')\
+            .outputMode('Complete')\
+            .option("truncate", "false")\
+            .start()\
+            .awaitTermination()
 
 
     # attached a ProgressReporter above
-    query.awaitTermination()
+
 
     #  get the right radio code json path
     radio_code_json_filepath = "radio_code.json"
@@ -82,10 +81,12 @@ def run_spark_job(spark):
     radio_code_df = radio_code_df.withColumnRenamed("disposition_code", "disposition")
 
     # TODO join on disposition column
-    join_query = agg_df.join(radio_code_df,col('agg_df.disposition') == col('radio_code_df.disposition'), 'inner') \
-                        .writeStream \
-                        .queryName("join") \
-                        .format("console") \
+    join_query = agg_df.join(radio_code_df,col('agg_df.disposition') == col('radio_code_df.disposition'), 'inner')\
+                        .writeStream\
+                        .queryName("join")\
+                        .outputMode('Complete')\
+                        .format('console')\
+                        .option("truncate", "false")\
                         .start()
     
 
@@ -96,7 +97,7 @@ def run_spark_job(spark):
 if __name__ == "__main__":
     logger = logging.getLogger(__name__)
 
-    # TODO Create Spark in Standalone mode
+    # Create Spark in Standalone mode
     spark = SparkSession \
         .builder \
         .master("local[*]") \
@@ -104,7 +105,7 @@ if __name__ == "__main__":
         .config("spark.ui.port", 3000) \
         .getOrCreate()
 
-
+    spark.sparkContext.setLogLevel("WARN")
     logger.info("Spark started")
 
     run_spark_job(spark)
